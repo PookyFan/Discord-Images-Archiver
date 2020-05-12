@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Discord;
+using Discord.WebSocket;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,8 +22,18 @@ namespace DiscordImagesArchiver
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool logInSuccess;
+        private DiscordSocketClient client;
+        private static SolidColorBrush redBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 0, 0));
+        private static SolidColorBrush greenBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 255, 0));
+
         public MainWindow()
         {
+            logInSuccess = false;
+            client = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = Discord.LogSeverity.Debug, MessageCacheSize = 0 });
+            client.Log += OnDiscordLog;
+            client.LoggedIn += OnDiscordLoggedIn;
+            client.LoggedOut += OnDiscordLoggedOut;
             InitializeComponent();
 
             logError.Tag = LogLevel.Error;
@@ -35,14 +47,57 @@ namespace DiscordImagesArchiver
             logsBox.Text += txt + "\n";
         }
 
+        private Task OnDiscordLoggedIn()
+        {
+            Dispatcher.Invoke(new Action(() =>
+            {
+                connectionStatusLabel.Content = "connected";
+                connectionStatusLabel.Foreground = greenBrush;
+                connectionButton.Content = "DISCONNECT";
+                connectionButton.IsEnabled = true;
+            }));
+
+            logInSuccess = true;
+            App.Log(LogLevel.Info, "Successfully logged in to Discord");
+            return Task.CompletedTask;
+        }
+
+        private Task OnDiscordLoggedOut()
+        {
+            Dispatcher.Invoke(new Action(() =>
+            {
+                connectionStatusLabel.Content = "not connected";
+                connectionStatusLabel.Foreground = redBrush;
+                connectionButton.Content = "CONNECT";
+                connectionButton.IsEnabled = true;
+            }));
+
+            if(logInSuccess)
+                App.Log(LogLevel.Info, "Successfully logged off from Discord");
+
+            logInSuccess = false;
+            return Task.CompletedTask;
+        }
+
+        private Task OnDiscordLog(LogMessage message)
+        {
+            string log = $"[DC] [{message.Severity}] {message.Source}: {message.Message} {message.Exception}";
+            App.Log(LogLevel.Debug, log);
+            return Task.CompletedTask;
+        }
+
         private void ConnectionStateChangeButton_Click(object sender, RoutedEventArgs e)
         {
-            App.Log(LogLevel.Info, "connect");
+            connectionButton.IsEnabled = false;
+
+            if(client.LoginState == LoginState.LoggedOut)
+                client.LoginAsync(TokenType.Bot, authTokenTextbox.Text);
+            else if(client.LoginState == LoginState.LoggedIn)
+                client.LogoutAsync();
         }
 
         private void RootDirBrowseButton_Click(object sender, RoutedEventArgs e)
         {
-            App.Log(LogLevel.Debug, "browse");
         }
 
         private void RadioButton_Checked(object sender, RoutedEventArgs e)

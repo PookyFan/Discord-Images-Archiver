@@ -9,11 +9,11 @@
     <Grid>
         <GroupBox Header="Connection" HorizontalAlignment="Left" Height="122" Margin="5,5,0,0" VerticalAlignment="Top" Width="250">
             <Grid>
-                <Button Content="CONNECT" HorizontalAlignment="Left" Margin="161,74,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.512,-0.497" Width="70" Click="ConnectionStateChangeButton_Click"/>
+                <Button x:Name="connectionButton" Content="CONNECT" HorizontalAlignment="Left" Margin="152,74,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.512,-0.497" Width="79" Click="ConnectionStateChangeButton_Click"/>
                 <Label Content="Authorization token:" Margin="1,3,-3,70"/>
-                <TextBox TextWrapping="Wrap" Margin="5,34,7,47"/>
+                <TextBox x:Name="authTokenTextbox" TextWrapping="Wrap" Margin="5,34,7,47"/>
                 <Label Content="Status:" Margin="1,71,189,2"/>
-                <Label Content="not connected" Foreground="Red" Margin="49,71,101,2"/>
+                <Label x:Name="connectionStatusLabel" Content="not connected" Foreground="Red" Margin="49,71,101,2"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="Local image archive" HorizontalAlignment="Left" Height="146" Margin="5,130,0,0" VerticalAlignment="Top" Width="250">

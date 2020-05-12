@@ -32,7 +32,7 @@ namespace DiscordImagesArchiver
                 return;
 
             string log = $"[{DateTime.Now,-19}] [{severity.ToString().ToUpper()}] {message}";
-            (appInstance.MainWindow as MainWindow).AddLogLine(log);
+            Current.Dispatcher.Invoke(new Action(() => { (appInstance.MainWindow as MainWindow).AddLogLine(log); }));
         }
     }
 }
