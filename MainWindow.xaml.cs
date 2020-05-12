@@ -23,6 +23,32 @@ namespace DiscordImagesArchiver
         public MainWindow()
         {
             InitializeComponent();
+
+            logError.Tag = LogLevel.Error;
+            logInfo.Tag = LogLevel.Info;
+            logDebug.Tag = LogLevel.Debug;
+            logDebug.IsChecked = true;
+        }
+
+        public void AddLogLine(string txt)
+        {
+            logsBox.Text += txt + "\n";
+        }
+
+        private void ConnectionStateChangeButton_Click(object sender, RoutedEventArgs e)
+        {
+            App.Log(LogLevel.Info, "connect");
+        }
+
+        private void RootDirBrowseButton_Click(object sender, RoutedEventArgs e)
+        {
+            App.Log(LogLevel.Debug, "browse");
+        }
+
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            RadioButton chosenRadio = (sender as RadioButton);
+            App.CurrentLogLevel = (LogLevel)chosenRadio.Tag;
         }
     }
 }
