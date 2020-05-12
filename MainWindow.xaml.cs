@@ -31,9 +31,10 @@ namespace DiscordImagesArchiver
         {
             logInSuccess = false;
             client = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = Discord.LogSeverity.Debug, MessageCacheSize = 0 });
-            client.Log += OnDiscordLog;
             client.LoggedIn += OnDiscordLoggedIn;
             client.LoggedOut += OnDiscordLoggedOut;
+            client.Ready += OnDiscordReady;
+            client.Log += OnDiscordLog;
             InitializeComponent();
 
             logError.Tag = LogLevel.Error;
@@ -47,8 +48,28 @@ namespace DiscordImagesArchiver
             logsBox.Text += txt + "\n";
         }
 
+        private List<TreeViewModel> CreateChannelsList()
+        {
+            List<TreeViewModel> channelsNodes = new List<TreeViewModel>();
+            foreach(var server in client.Guilds)
+            {
+                TreeViewModel node = new TreeViewModel(server.Name);
+                foreach(var channel in server.TextChannels)
+                {
+                    TreeViewModel subnode = new TreeViewModel($"#{channel.Name}");
+                    subnode.Tag = channel.Id;
+                    node.Children.Add(subnode);
+                }
+
+                channelsNodes.Add(node);
+            }
+
+            return channelsNodes;
+        }
+
         private Task OnDiscordLoggedIn()
         {
+            logInSuccess = true;
             Dispatcher.Invoke(new Action(() =>
             {
                 connectionStatusLabel.Content = "connected";
@@ -57,7 +78,7 @@ namespace DiscordImagesArchiver
                 connectionButton.IsEnabled = true;
             }));
 
-            logInSuccess = true;
+            client.StartAsync();
             App.Log(LogLevel.Info, "Successfully logged in to Discord");
             return Task.CompletedTask;
         }
@@ -66,6 +87,7 @@ namespace DiscordImagesArchiver
         {
             Dispatcher.Invoke(new Action(() =>
             {
+                channelsTreeView.ItemsSource = new List<TreeViewModel>();
                 connectionStatusLabel.Content = "not connected";
                 connectionStatusLabel.Foreground = redBrush;
                 connectionButton.Content = "CONNECT";
@@ -76,6 +98,12 @@ namespace DiscordImagesArchiver
                 App.Log(LogLevel.Info, "Successfully logged off from Discord");
 
             logInSuccess = false;
+            return Task.CompletedTask;
+        }
+
+        private Task OnDiscordReady()
+        {
+            Dispatcher.Invoke(new Action(() => { channelsTreeView.ItemsSource = CreateChannelsList(); }));
             return Task.CompletedTask;
         }
 
