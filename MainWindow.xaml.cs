@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Discord_Images_Archiver
+namespace DiscordImagesArchiver
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
