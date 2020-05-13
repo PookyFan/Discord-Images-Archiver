@@ -19,7 +19,7 @@ namespace DiscordImagesArchiver
         public string Name { get; private set; }
         public List<TreeViewModel> Children { get; private set; }
         public bool IsInitiallySelected { get; private set; }
-        public object Tag { get; set; }
+        public object Tag { get; set; } = null;
 
         bool? _isChecked = false;
         TreeViewModel _parent;

@@ -24,19 +24,23 @@ namespace DiscordImagesArchiver
     {
         private bool logInSuccess;
         private DiscordSocketClient client;
+        private DiscordImagesScanner imagesScanner;
         private static SolidColorBrush redBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 0, 0));
         private static SolidColorBrush greenBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 255, 0));
 
         public MainWindow()
         {
             logInSuccess = false;
+
             client = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = Discord.LogSeverity.Debug, MessageCacheSize = 0 });
             client.LoggedIn += OnDiscordLoggedIn;
             client.LoggedOut += OnDiscordLoggedOut;
             client.Ready += OnDiscordReady;
             client.Log += OnDiscordLog;
-            InitializeComponent();
 
+            imagesScanner = new DiscordImagesScanner();
+
+            InitializeComponent();
             logError.Tag = LogLevel.Error;
             logInfo.Tag = LogLevel.Info;
             logDebug.Tag = LogLevel.Debug;
@@ -57,7 +61,7 @@ namespace DiscordImagesArchiver
                 foreach(var channel in server.TextChannels)
                 {
                     TreeViewModel subnode = new TreeViewModel($"#{channel.Name}");
-                    subnode.Tag = channel.Id;
+                    subnode.Tag = channel;
                     node.Children.Add(subnode);
                 }
 
@@ -65,6 +69,27 @@ namespace DiscordImagesArchiver
             }
 
             return channelsNodes;
+        }
+
+        private void PerformImagesScan()
+        {
+            foreach(TreeViewModel serverNode in channelsTreeView.Items)
+            {
+                if(!serverNode.IsChecked.GetValueOrDefault(false))
+                    continue;
+
+                foreach(TreeViewModel channelNode in serverNode.Children)
+                {
+                    if(channelNode.IsChecked.GetValueOrDefault(true))
+                    {
+                        ITextChannel channel = (channelNode.Tag as ITextChannel);
+                        List<string> urls = imagesScanner.GetAllImagesUrlsFromChannelMessages(channel);
+                        if(urls.Count == 0)
+                            continue;
+                        //todo
+                    }
+                }
+            }
         }
 
         private Task OnDiscordLoggedIn()
@@ -132,6 +157,11 @@ namespace DiscordImagesArchiver
         {
             RadioButton chosenRadio = (sender as RadioButton);
             App.CurrentLogLevel = (LogLevel)chosenRadio.Tag;
+        }
+
+        private void ScanNowButton_Click(object sender, RoutedEventArgs e)
+        {
+            PerformImagesScan();
         }
     }
 }
