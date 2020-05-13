@@ -3,8 +3,10 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Discord_Images_Archiver</RootNamespace>
+    <RootNamespace>DiscordImagesArchiver</RootNamespace>
     <UseWPF>true</UseWPF>
+    <StartupObject></StartupObject>
+    <ApplicationIcon />
   </PropertyGroup>
 
   <ItemGroup>
