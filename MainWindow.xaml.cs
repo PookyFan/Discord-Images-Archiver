@@ -37,7 +37,6 @@ namespace DiscordImagesArchiver
             client.LoggedIn += OnDiscordLoggedIn;
             client.LoggedOut += OnDiscordLoggedOut;
             client.Ready += OnDiscordReady;
-            client.Log += OnDiscordLog;
 
             imagesScanner = new DiscordImagesScanner();
             storage = new LocalArchiveStorage(System.IO.Directory.GetCurrentDirectory());
@@ -47,11 +46,13 @@ namespace DiscordImagesArchiver
             logInfo.Tag = LogLevel.Info;
             logDebug.Tag = LogLevel.Debug;
             logDebug.IsChecked = true;
+            logsBox.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
         }
 
         public void AddLogLine(string txt)
         {
             logsBox.Text += txt + "\n";
+            logsBox.ScrollToEnd();
         }
 
         private List<TreeViewModel> CreateChannelsList()
@@ -122,6 +123,8 @@ namespace DiscordImagesArchiver
 
             if(logInSuccess)
                 App.Log(LogLevel.Info, "Successfully logged off from Discord");
+            else
+                App.Log(LogLevel.Error, "Could not login to Discord - check if authorization token is correct and Discord servers are available");
 
             logInSuccess = false;
             return Task.CompletedTask;
@@ -163,6 +166,15 @@ namespace DiscordImagesArchiver
         private void ScanNowButton_Click(object sender, RoutedEventArgs e)
         {
             PerformImagesScan();
+        }
+
+        private void logDiscordCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            CheckBox cb = (sender as CheckBox);
+            if(cb.IsChecked.GetValueOrDefault(false))
+                client.Log += OnDiscordLog;
+            else
+                client.Log -= OnDiscordLog;
         }
     }
 }
