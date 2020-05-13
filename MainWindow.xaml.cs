@@ -25,6 +25,7 @@ namespace DiscordImagesArchiver
         private bool logInSuccess;
         private DiscordSocketClient client;
         private DiscordImagesScanner imagesScanner;
+        private IArchiveStorage storage;
         private static SolidColorBrush redBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 0, 0));
         private static SolidColorBrush greenBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 255, 0));
 
@@ -39,6 +40,7 @@ namespace DiscordImagesArchiver
             client.Log += OnDiscordLog;
 
             imagesScanner = new DiscordImagesScanner();
+            storage = new LocalArchiveStorage(System.IO.Directory.GetCurrentDirectory());
 
             InitializeComponent();
             logError.Tag = LogLevel.Error;
@@ -84,9 +86,8 @@ namespace DiscordImagesArchiver
                     {
                         ITextChannel channel = (channelNode.Tag as ITextChannel);
                         List<string> urls = imagesScanner.GetAllImagesUrlsFromChannelMessages(channel);
-                        if(urls.Count == 0)
-                            continue;
-                        //todo
+                        if(urls.Count > 0)
+                            storage.StoreImages(urls, channel);
                     }
                 }
             }

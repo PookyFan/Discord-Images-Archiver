@@ -33,7 +33,15 @@ namespace DiscordImagesArchiver
                     while(messages.MoveNext())
                     {
                         var msg = messages.Current;
-                        //todo
+                        var enumerator = msg.Attachments.GetEnumerator();
+
+                        //There should be up to one attachment per message - let's get it right away if it's there
+                        if(enumerator.MoveNext())
+                        {
+                            var attachment = enumerator.Current;
+                            if(attachment.Width.HasValue) //Attachment has dimensions -> it's an image
+                                urls.Add(attachment.Url);
+                        }
                     }
                 }
             }
@@ -41,6 +49,7 @@ namespace DiscordImagesArchiver
             {
                 App.Log(LogLevel.Error, e.Message);
             }
+
             return urls;
         }
     }
