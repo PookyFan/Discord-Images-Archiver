@@ -33,23 +33,27 @@
                 <Label x:Name="connectionStatusLabel" Content="not connected" Foreground="Red" Margin="49,71,101,2"/>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Local image archive" HorizontalAlignment="Left" Height="146" Margin="5,130,0,0" VerticalAlignment="Top" Width="270">
+        <GroupBox Header="Local image archive" HorizontalAlignment="Left" Height="146" Margin="5,130,0,0" VerticalAlignment="Top" Width="270" IsEnabled="False">
             <Grid Height="121">
-                <Label Content="Archive root directory:" HorizontalAlignment="Left" Margin="1,3,0,0" VerticalAlignment="Top"/>
-                <TextBox HorizontalAlignment="Left" Margin="5,34,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" Width="243"/>
-                <Button Content="Browse..." HorizontalAlignment="Left" Margin="178,60,0,0" VerticalAlignment="Top" Width="70" RenderTransformOrigin="0.008,0.492" Click="RootDirBrowseButton_Click"/>
-                <CheckBox Content="Don't download duplicated images" HorizontalAlignment="Left" Margin="5,96,0,0" VerticalAlignment="Top"/>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="35*"/>
+                    <ColumnDefinition Width="94*"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Archive root directory:" HorizontalAlignment="Left" Margin="1,3,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                <TextBox HorizontalAlignment="Left" Margin="5,34,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" Width="243" Grid.ColumnSpan="2"/>
+                <Button Content="Browse..." HorizontalAlignment="Left" Margin="108,60,0,0" VerticalAlignment="Top" Width="70" RenderTransformOrigin="0.008,0.492" Click="RootDirBrowseButton_Click" Grid.Column="1"/>
+                <CheckBox Content="Don't download duplicated images" HorizontalAlignment="Left" Margin="5,96,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="Image scanning" HorizontalAlignment="Left" Height="161" Margin="5,280,0,0" VerticalAlignment="Top" Width="270">
             <Grid>
                 <Label Content="Scan messages older than" HorizontalAlignment="Left" Margin="1,3,0,0" VerticalAlignment="Top"/>
                 <Label Content="mins" HorizontalAlignment="Left" Margin="213,3,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.49,1.162"/>
-                <TextBox HorizontalAlignment="Left" Margin="152,7,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="56"/>
+                <TextBox HorizontalAlignment="Left" Margin="152,7,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="56" IsEnabled="false"/>
                 <Label Content="Scan for new images every" HorizontalAlignment="Left" Margin="1,26,0,0" VerticalAlignment="Top"/>
                 <Label Content="mins" HorizontalAlignment="Left" Margin="213,26,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.49,1.162"/>
-                <TextBox HorizontalAlignment="Left" Margin="152,30,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="56"/>
-                <CheckBox Content="Ignore spoiler images" HorizontalAlignment="Left" Margin="5,69,0,0" VerticalAlignment="Top"/>
+                <TextBox HorizontalAlignment="Left" Margin="152,30,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="56" IsEnabled="false"/>
+                <CheckBox Content="Ignore spoiler images" HorizontalAlignment="Left" Margin="5,69,0,0" VerticalAlignment="Top" IsEnabled="false"/>
                 <Button Content="Scan now" HorizontalAlignment="Left" Margin="10,98,0,0" VerticalAlignment="Top" Height="30" RenderTransformOrigin="0.631,-0.273" Click="ScanNowButton_Click"/>
             </Grid>
         </GroupBox>
