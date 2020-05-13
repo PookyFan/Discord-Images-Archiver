@@ -43,6 +43,7 @@ namespace DiscordImagesArchiver
                 App.Log(LogLevel.Error, e.Message);
             }
 
+            App.Log(LogLevel.Info, $"Fetched {urls.Count} images from #{channel.Name} on {channel.Guild.Name}");
             return urls;
         }
 
