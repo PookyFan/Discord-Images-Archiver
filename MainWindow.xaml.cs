@@ -37,6 +37,7 @@ namespace DiscordImagesArchiver
             client.LoggedIn += OnDiscordLoggedIn;
             client.LoggedOut += OnDiscordLoggedOut;
             client.Ready += OnDiscordReady;
+            client.MessageReceived += OnDiscordMessage;
 
             imagesScanner = new DiscordImagesScanner();
             storage = new LocalArchiveStorage(System.IO.Directory.GetCurrentDirectory());
@@ -133,6 +134,36 @@ namespace DiscordImagesArchiver
         private Task OnDiscordReady()
         {
             Dispatcher.Invoke(new Action(() => { channelsTreeView.ItemsSource = CreateChannelsList(); }));
+            return Task.CompletedTask;
+        }
+
+        private Task OnDiscordMessage(SocketMessage message)
+        {
+            ITextChannel sourceChannel = null;
+            App.Log(LogLevel.Debug, $"New message on #{message.Channel.Name}");
+            foreach(TreeViewModel serverNode in channelsTreeView.Items)
+            {
+                var match = serverNode.Children
+                    .Where(c =>
+                        c.IsChecked.GetValueOrDefault(false)
+                        && (c.Tag as ITextChannel).Id == message.Channel.Id);
+
+                if(match.Count() > 0)
+                {
+                    App.Log(LogLevel.Debug, "Channel is tracked - scanning message for image");
+                    sourceChannel = match.ElementAt(0).Tag as ITextChannel;
+                    break;
+                }
+            }
+
+            if(sourceChannel != null)
+            {
+                string? imgUrl = DiscordImagesScanner.GetImageUrlFromMessage(message);
+                App.Log(LogLevel.Debug, String.Format("Message does{0} contain image", (imgUrl != null) ? "" : " NOT"));
+                if(imgUrl != null)
+                    storage.StoreSingleImage(imgUrl, sourceChannel);
+            }
+
             return Task.CompletedTask;
         }
 
